@@ -38,6 +38,8 @@
 #include "DEV_ProgButton.h"     
 
 DEV_ProgButton *doorbellButton;
+const int ANALOG_INPUT_PIN = 34;
+const int DIGITAL_INPUT_PIN = 23;
 
 void setup() {
 
@@ -87,8 +89,7 @@ void setup() {
     // to be unique so HomeKit can distinguish them.  Note that HomeKit does not require index numbers if you only have one Stateless Programmable Switch Service within any
     // given Accessory.  Since we have two, we must specify two unique index numbers.
     
-    doorbellButton = new DEV_ProgButton(23,1);       // create Stateless Programmable Switch Service on pin 23 with index=1
-    //new DEV_ProgButton(5,2);        // create Stateless Programmable Switch Service on pin 5 with index=2
+    doorbellButton = new DEV_ProgButton(DIGITAL_INPUT_PIN,1);       // create Stateless Programmable Switch Service on pin 23 with index=1
  
 } // end of setup()
 
@@ -101,7 +102,7 @@ long starttime = 0;
 void loop(){
   
   homeSpan.poll();
-  uint doorbellLevel = analogRead(34);
+  uint doorbellLevel = analogRead(ANALOG_INPUT_PIN);
 
   // Nur bei steigender Flanke wird ein Ereignis ausgelöst
   if(doorbellLevel > (4095.0 * 20.0/24.0))
@@ -117,7 +118,7 @@ void loop(){
     if(!doorbellRings && millis() > starttime + 500)
     { 
       Serial.printf("\n+++++++signal switch on++++++++\n");
-      doorbellButton->switchEvent->setVal(0);
+      doorbellButton->switchEvent->setVal((int)SpanButton::SINGLE);
       doorbellRings = true;
     }
   }
